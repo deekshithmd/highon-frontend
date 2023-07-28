@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
+
 import Avatar from "../../assets/images/avatar.jpg";
 
-export const Post = ({ data }) => {
+export const Post = ({ post }) => {
   const videoRef = useRef(null);
   const [play, setPlay] = useState(true);
 
@@ -22,25 +23,26 @@ export const Post = ({ data }) => {
         <UserDataContainer>
           <ProfileIcon src={Avatar} alt="profile" />
           <ProfileTextContainer>
-            <Text>{data?.name}</Text>
+            <Text>{post?.name}</Text>
             <Text>Mangalore, 20min ago</Text>
           </ProfileTextContainer>
         </UserDataContainer>
         <More>...</More>
       </ProfileContainer>
-      {data?.mediaType === "video" ? (
-        <VideoTag
-          src={data?.media}
-          aspect={data?.mediaAspectRatio}
-          ref={videoRef}
-          autoPlay
-          loop
-          onClick={handleVideo}
-        />
-      ) : (
-        <PostMedia src={data?.media} alt="media" />
-      )}
-
+      <MediaContainer>
+        {post?.mediaType === "video" ? (
+          <VideoTag
+            src={post?.media}
+            aspect={post?.mediaAspectRatio}
+            ref={videoRef}
+            autoPlay
+            loop
+            onClick={handleVideo}
+          />
+        ) : (
+          <PostMedia src={post?.media} alt="media" />
+        )}
+      </MediaContainer>
       <PostDataContainer>
         <ProfilesIndicator zIndex={0}>
           <ProfileIcon src={Avatar} alt="profile" />
@@ -51,10 +53,16 @@ export const Post = ({ data }) => {
         <ProfilesIndicator zIndex={2}>
           <ProfileIcon src={Avatar} alt="profile" />
         </ProfilesIndicator>
-        <Text>{data?.name} and {data?.likes} others emoted</Text>
+        <Text>
+          {post?.name} and {post?.likes} others emoted
+        </Text>
       </PostDataContainer>
       <DiscriptionContainer>
-        <Text>{data?.description}</Text>
+        <Text>
+          {post?.description?.length > 150
+            ? post?.description?.slice(0, 150) + "..."
+            : post?.description}
+        </Text>
       </DiscriptionContainer>
     </PostCard>
   );
@@ -96,6 +104,14 @@ const ProfileTextContainer = styled.div`
   justify-content: space-evenly;
 `;
 
+const MediaContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const PostMedia = styled.img`
   width: 100%;
   height: 202px;
@@ -107,7 +123,6 @@ const VideoTag = styled.video`
   height: 202px;
   object-fit: cover;
   aspect-ratio: ${(props) => props.aspect};
-  border-radius: 13px;
 `;
 
 const Text = styled.span`

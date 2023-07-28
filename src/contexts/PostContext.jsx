@@ -13,13 +13,25 @@ const PostContextProvider = ({ children }) => {
   const [userName, setUserName] = useState("deekshith");
   const [thumbNail, setThumbNail] = useState("");
   const [singlePost, setSinglePost] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   React.useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const data = await getPosts();
       setPosts(data);
+      setIsLoading(false);
     })();
   }, []);
+
+  React.useEffect(() => {
+    posts?.map((post) => {
+      if (post?._id === singlePost?._id) {
+        setSinglePost(post);
+      }
+      return null;
+    });
+  }, [posts]);
 
   const handleAddPost = () => {
     setShowAddPost(!showAddPost);
@@ -46,6 +58,8 @@ const PostContextProvider = ({ children }) => {
         setThumbNail,
         singlePost,
         setSinglePost,
+        isLoading,
+        setIsLoading,
       }}
     >
       {children}

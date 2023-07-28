@@ -1,119 +1,72 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
 import Heart from "../../assets/icons/heart.svg";
 import Liked from "../../assets/icons/liked.svg";
 import { usePosts } from "../../contexts/PostContext";
-import { updatePost } from "../../services/services";
-import { useNavigate } from "react-router-dom";
+import { handleLike } from "../../services/helpers";
 
 export const Home = () => {
-  const { posts, setPosts, userName, setSinglePost } = usePosts();
+  const { posts, setPosts, userName, setSinglePost, isLoading } = usePosts();
   const navigate = useNavigate();
 
-  const handleLike = async (post) => {
-    let newData;
-    if (post?.likedBy?.includes(userName)) {
-      newData = {
-        ...post,
-        likes: post?.likes - 1,
-        likedBy: post?.likedBy?.filter((user) => user !== userName),
-      };
-    } else {
-      newData = {
-        ...post,
-        likes: post?.likes + 1,
-        likedBy: post?.likedBy?.concat([userName]),
-      };
-    }
-    try {
-      const res = await updatePost({ id: post?._id, post: newData });
-      setPosts(res);
-    } catch (e) {
-      console.log("error occured", e);
-    }
+  const likePost = async (post) => {
+    const result = await handleLike({ post, userName });
+    setPosts(result);
   };
 
   return (
     <OuterGrid>
-      {/* <Big>
-        <Image src={Image1} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Big>
-      <Horizontal>
-        <Image src={Image2} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Horizontal>
-      <Vertical>
-        <Image src={Image3} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Vertical>
-      <Horizontal>
-        <Image src={Image4} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Horizontal>
-      <Vertical>
-        <Image src={Image3} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Vertical>
-      <Big>
-        <Image src={Image1} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Big>
-      <Horizontal>
-        <Image src={Image2} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Horizontal>
-      <Vertical>
-        <Image src={Image3} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Vertical>
-      <Horizontal>
-        <Image src={Image4} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Horizontal>
-      <Vertical>
-        <Image src={Image3} alt="image" />
-        <Like src={Heart} alt="like" />
-      </Vertical> */}
-      {posts?.map((post) => {
-        const n = Math.floor(Math.random() * 3) + 1;
-        return (
-          <Container
-            key={post?._id}
-            className={n === 1 ? "big" : n === 2 ? "vertical" : "horizontal"}
-          >
-            {post?.mediaType === "video" ? (
-              <VideoTag
-                src={post?.media}
-                aspect={post?.mediaAspectRatio}
-                autoPlay
-                loop
-                muted
-                onClick={() => {
-                  setSinglePost(post);
-                  navigate("/posts");
-                }}
-              />
-            ) : (
-              <Image
-                src={post?.media}
-                alt="image"
-                aspect={post?.mediaAspectRatio}
-                onClick={() => {
-                  setSinglePost(post);
-                  navigate("/posts");
-                }}
-              />
-            )}
+      {isLoading ? (
+        <LoaderContainer>
+          <h1>Loading Posts....</h1>
+        </LoaderContainer>
+      ) : (
+        <>
+          {posts?.map((post) => {
+            const n = Math.floor(Math.random() * 3) + 1;
+            return (
+              <Container
+                key={post?._id}
+                className={
+                  n === 1 ? "big" : n === 2 ? "vertical" : "horizontal"
+                }
+              >
+                {post?.mediaType === "video" ? (
+                  <VideoTag
+                    src={post?.media}
+                    aspect={post?.mediaAspectRatio}
+                    autoPlay
+                    loop
+                    muted
+                    onClick={() => {
+                      setSinglePost(post);
+                      navigate("/posts");
+                    }}
+                  />
+                ) : (
+                  <Image
+                    src={post?.media}
+                    alt="image"
+                    aspect={post?.mediaAspectRatio}
+                    onClick={() => {
+                      setSinglePost(post);
+                      navigate("/posts");
+                    }}
+                  />
+                )}
 
-            <Like
-              src={post?.likedBy?.includes(userName) ? Liked : Heart}
-              onClick={() => handleLike(post)}
-              alt="like"
-            />
-          </Container>
-        );
-      })}
+                <Like
+                  src={post?.likedBy?.includes(userName) ? Liked : Heart}
+                  onClick={() => likePost(post)}
+                  alt="like"
+                />
+              </Container>
+            );
+          })}
+        </>
+      )}
     </OuterGrid>
   );
 };
@@ -139,11 +92,9 @@ const VideoTag = styled.video`
   height: 100%;
   object-fit: cover;
   aspect-ratio: ${(props) => props.aspect};
-  border-radius: 13px;
 `;
 
 const Container = styled.div`
-  background:#CECECE;
   &.horizontal{
     grid-column: span 2;
     position: relative;
@@ -161,16 +112,13 @@ const Container = styled.div`
   }
 `;
 
-// const Vertical = styled.div`
-//   grid-row: span 2;
-//   position: relative;
-// `;
-
-// const Big = styled.div`
-//   grid:column:span 2;
-//   grid-row:span 2;
-//   position:relative;
-// `;
+const LoaderContainer = styled.div`
+  width: 100vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Like = styled.img`
   position: absolute;

@@ -1,12 +1,14 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+
 import Logo from "../../assets/logo/highon.png";
 import { ReactComponent as Close } from "../../assets/icons/close.svg";
 import { ReactComponent as Post } from "../../assets/icons/post.svg";
 import { ReactComponent as Story } from "../../assets/icons/story.svg";
 import { ReactComponent as Add } from "../../assets/icons/addPost.svg";
 import { usePosts } from "../../contexts/PostContext";
-import { useNavigate } from "react-router-dom";
+
 
 export const Header = () => {
   const { handleAddPost, showAddPost, setShowAddPost } = usePosts();

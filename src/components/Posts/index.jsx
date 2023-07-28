@@ -1,17 +1,22 @@
 import React from "react";
 import styled from "styled-components";
+
 import { Post } from "../Post";
 import { usePosts } from "../../contexts/PostContext";
+import { PostView } from "../PostView";
 
 export const Posts = () => {
   const { singlePost, posts } = usePosts();
+  
   return (
-    <PostsContainer>
-      <Post data={singlePost} />
-      {posts?.map((post) => {
-        return post?._id !== singlePost?._id && <Post data={post} />;
-      })}
-    </PostsContainer>
+    <>
+      <PostView post={singlePost}/>
+      <PostsContainer>
+        {posts?.map((post) => {
+          return post?._id !== singlePost?._id && <Post post={post} />;
+        })}
+      </PostsContainer>
+    </>
   );
 };
 

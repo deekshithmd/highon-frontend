@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import { usePosts } from "../../contexts/PostContext";
 import { ReactComponent as Back } from "../../assets/icons/back.svg";
-import { useNavigate } from "react-router-dom";
+
 
 
 export const EditImage = () => {
